@@ -1,0 +1,23 @@
+{
+  "timestamp": "2025-06-06T11:44:54.994147",
+  "model": "claude-3-haiku-20240307",
+  "system_prompt": null,
+  "messages": [
+    {
+      "role": "user",
+      "content": "Hello"
+    },
+    {
+      "role": "assistant",
+      "content": "Hello! How can I assist you today?"
+    },
+    {
+      "role": "user",
+      "content": "What was the text of my last message to you in this conversation?"
+    },
+    {
+      "role": "assistant",
+      "content": "The text of your last message to me in this conversation was \"Hello\"."
+    }
+  ]
+}
