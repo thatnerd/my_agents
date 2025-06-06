@@ -1,15 +1,19 @@
 #!/usr/bin/env python3
-"""Claude Chat CLI
+"""Default Agent CLI
 
 Usage:
-    default_agent.py [--model=<model>] [--system=<file>] [--max-tokens=<tokens>]
+    default_agent.py [--model=<model>] [--system=<file>] [--max-tokens=<tokens>] [--timeout=<seconds>] [--api-key=<key>]
     default_agent.py (-h | --help)
+    default_agent.py --version
 
 Options:
     -h --help              Show this screen.
+    --version              Show version.
     --model=<model>        Claude model to use [default: claude-3-haiku-20240307].
     --system=<file>        System prompt file in ../prompt/ directory.
     --max-tokens=<tokens>  Maximum tokens in response [default: 4096].
+    --timeout=<seconds>    API connection timeout in seconds [default: 5.0].
+    --api-key=<key>        Anthropic API key [default: ~/.keys/anthropic_api_key].
 
 Commands:
     /exit, /quit           Exit the program.
@@ -27,8 +31,16 @@ import anthropic
 from docopt import docopt
 
 
-def load_api_key() -> str:
-    """Load Anthropic API key from ~/.keys/anthropic_api_key."""
+__version__ = "0.1.0"
+
+
+def load_api_key(api_key_arg: str) -> str:
+    """Load Anthropic API key from command line or ~/.keys/anthropic_api_key."""
+    if api_key_arg != "~/.keys/anthropic_api_key":
+        # API key provided directly via command line
+        return api_key_arg
+    
+    # Load from default file location
     key_path = Path.home() / ".keys" / "anthropic_api_key"
     return key_path.read_text().strip()
 
@@ -72,13 +84,14 @@ def load_system_prompt(filename: Optional[str]) -> Optional[str]:
 
 def main() -> None:
     """Main chat loop."""
-    args = docopt(__doc__)
+    args = docopt(__doc__, version=f"Default Agent CLI {__version__}")
     
     # Load API key
-    api_key = load_api_key()
+    api_key = load_api_key(args['--api-key'])
+    timeout = float(args['--timeout'])
     client = anthropic.Anthropic(
         api_key=api_key,
-        timeout=5.0
+        timeout=timeout
     )
     
     # Load system prompt if specified
@@ -90,7 +103,7 @@ def main() -> None:
     model = args['--model']
     max_tokens = int(args['--max-tokens'])
     
-    print(f"Claude Chat CLI (Model: {model})")
+    print(f"Default Agent CLI (Model: {model})")
     if system_prompt:
         print(f"System prompt loaded from: {args['--system']}")
     print("Type your message and press Enter. Use /exit, /quit, Ctrl-C, or Ctrl-D twice to exit.\n")
